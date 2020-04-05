@@ -1,0 +1,74 @@
+if (typeof calculator == "undefined" || !calculator) {
+    calculator = {
+        price: 0,
+        count: 1,
+        currentType: undefined
+    };
+}
+
+calculator.onSelectPreview = function (e) {
+    var preview = $(e.currentTarget);
+    var id = preview.data('id');
+
+    $('.calc-body .previews.active')
+        .removeClass('active');
+
+    var url = preview.find('img').attr('src');
+    var block = $('.calc-price');
+    block.addClass('active');   
+    block.find('.preview').attr('src', url);
+    block.find('.options input').prop('checked', false);
+
+    calculator.price = calculateData[calculator.currentType].startPrice;
+    calculator.count = 1;
+    calculator.changeSum(0);
+
+    $([document.documentElement, document.body]).animate({
+        scrollTop: $('.calc-price').offset().top
+    }, 2000);
+}
+
+calculator.choosePreview = function (e) {
+    $('.calc-price.active').removeClass('active');
+    $('.calc-body .previews[data-type="' + calculator.currentType + '"]')
+        .addClass('active');
+}
+
+calculator.changeSum = function (diff) {
+    calculator.price += diff;
+    $('.calc-price .result span').text(calculator.price * calculator.count);
+}
+
+calculator.onChangeOption = function (e) {
+    var input = $(e.currentTarget);
+    var checked = input.prop("checked");
+    var price = input.data('price');
+
+    calculator.changeSum(checked ? price : - price);
+}
+
+calculator.onChangeCount = function (e) {
+    var count = $(e.currentTarget).val();
+    calculator.count = parseInt(count) + 1;
+    calculator.changeSum(0);
+}
+
+calculator.onChangeType = function (e) {
+    var type = $(e.currentTarget).val();
+    calculator.currentType = type;
+    calculator.price = calculateData[type].startPrice;
+    calculator.changeSum(0);
+
+    $('.calc-price.active').removeClass('active');
+    $('.calc-body .previews.active').removeClass('active');
+    $('.calc-body .previews[data-type="' + type + '"]')
+        .addClass('active');
+
+    $('.calc-price .m2').text('Количество ' + calculateData[type].m2);
+};
+
+$(document).on('change', '.calc-price .options input', calculator.onChangeOption)
+$(document).on('change', '#calculator-count', calculator.onChangeCount)
+$(document).on('change', '#calculator-type', calculator.onChangeType);
+$(document).on('click', '.preview', calculator.onSelectPreview);
+$(document).on('click', '.choose_preview', calculator.choosePreview);

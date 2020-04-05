@@ -1,0 +1,13 @@
+function ready() {
+    $(".sliding-link").click(function(e) {
+        e.preventDefault();
+        var aid = $(this).attr("href");
+        $('html,body').animate({scrollTop: $(aid).offset().top},'slow');
+    });
+	
+	$(".hamb_menu li").click(function(e) {
+        $('#trigger').click();
+    });	
+}
+
+document.addEventListener("DOMContentLoaded", ready);
